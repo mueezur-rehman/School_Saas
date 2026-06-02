@@ -104,6 +104,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard'   # Login hote hi client seedha Dashboard par jayega
+LOGOUT_REDIRECT_URL = 'login'
 
 # ==========================================
 # 🌍 INTERNATIONALIZATION
