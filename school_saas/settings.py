@@ -69,7 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'core.context_processors.global_context', 
+                'core.context_processors.institute_labels',
             ],
         },
     },
@@ -143,3 +143,12 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'your_app_password_h
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
+    
+    
+    # ==========================================
+# 🛡️ CSRF TRUSTED ORIGINS (For Render POST Requests)
+# ==========================================
+CSRF_TRUSTED_ORIGINS = [
+    'https://smart-school-saas.onrender.com',
+    'https://*.onrender.com',
+]
