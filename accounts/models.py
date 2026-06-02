@@ -26,7 +26,7 @@ class CustomUser(AbstractUser, TimeStampedModel):
     
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=STUDENT)
     phone = models.CharField(max_length=15, blank=True, null=True)
-    
+    otp_code = models.CharField(max_length=6, blank=True, null=True)
     # Profile pic for user
     profile_picture = models.ImageField(upload_to='user_profiles/', blank=True, null=True)
 

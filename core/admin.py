@@ -1,11 +1,8 @@
 from django.contrib import admin
-from .models import School
+from .models import School, AcademicSession
 
+# 👇 Security Guard (Mixin) - Jo humne pehle banaya tha
 class SchoolAccessMixin:
-    """
-    1. Superuser: Sab kuch dekh/edit kar sakta hai.
-    2. School Admin: Sirf apna data dekh sakta hai.
-    """
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
@@ -13,7 +10,6 @@ class SchoolAccessMixin:
         return qs.filter(school=request.user.school)
 
     def save_model(self, request, obj, form, change):
-        # Sirf Non-Superuser ke liye automatic school set karo
         if not request.user.is_superuser:
             obj.school = request.user.school
         super().save_model(request, obj, form, change)
@@ -24,14 +20,20 @@ class SchoolAccessMixin:
                 kwargs["queryset"] = db_field.related_model.objects.filter(school=request.user.school)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    # 👇 YEH NAYA METHOD ADD KARO (Dynamic Hiding)
     def get_exclude(self, request, obj=None):
-        # Agar Superuser nahi hai, toh 'school' field chhupa do
         if not request.user.is_superuser:
             return ('school',)
-        # Agar Superuser hai, toh kuch mat chhupao
         return []
 
+# 👇 SCHOOL ADMIN (Sirf Superuser ke liye)
 @admin.register(School)
 class SchoolAdmin(admin.ModelAdmin):
     list_display = ('name', 'is_active', 'subscription_end_date')
+
+# 👇 YEH RAHA WO MISSING SESSION ADMIN
+@admin.register(AcademicSession)
+class AcademicSessionAdmin(SchoolAccessMixin, admin.ModelAdmin):
+    list_display = ('name', 'is_current', 'start_date', 'end_date')
+    list_filter = ('is_current',)
+    list_editable = ('is_current',) # Bahar se hi Tick/Untick kar sako
+    ordering = ('-start_date',)

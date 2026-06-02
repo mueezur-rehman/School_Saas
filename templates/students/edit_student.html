@@ -1,129 +1,232 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-warning text-dark">
-                    <h4 class="mb-0">✏️ Edit Student Details: {{ student.first_name }}</h4>
-                </div>
-                <div class="card-body p-4">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
+    
+    .admission-wrapper {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8fafc;
+        padding-bottom: 50px;
+    }
+    .saas-card {
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        background: #ffffff;
+        overflow: hidden;
+    }
+    .saas-header {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        padding: 35px 20px;
+        text-align: center;
+    }
+    .saas-header h3 {
+        color: #ffffff;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+    .saas-header .urdu-title {
+        font-family: 'Noto Nastaliq Urdu', serif;
+        color: #f0fdf4;
+        font-size: 1.5rem;
+        margin-top: 5px;
+    }
+    .section-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 12px;
+        margin-top: 40px;
+        margin-bottom: 25px;
+    }
+    .section-title i {
+        background: #e0f2fe;
+        color: #0284c7;
+        padding: 8px 10px;
+        border-radius: 10px;
+        margin-right: 12px;
+    }
+    .section-title .urdu-section {
+        font-family: 'Noto Nastaliq Urdu', serif;
+        color: #64748b;
+        font-size: 1.1rem;
+        font-weight: normal;
+        margin-left: auto;
+    }
+    .smart-label {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: #334155;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+    .urdu-lbl {
+        font-family: 'Noto Nastaliq Urdu', serif;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        direction: rtl;
+    }
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
+        padding: 12px 16px;
+        background-color: #f8fafc;
+        transition: all 0.2s;
+    }
+    .form-control:focus, .form-select:focus {
+        background-color: #ffffff;
+        border-color: #0284c7;
+        box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+        outline: none;
+    }
+    .current-photo-badge {
+        max-height: 80px;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+        object-fit: cover;
+    }
+    .btn-submit {
+        background: linear-gradient(to right, #0284c7, #0ea5e9);
+        border: none;
+        padding: 14px 35px;
+        border-radius: 10px;
+        font-weight: 600;
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.3);
+    }
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.4);
+    }
+</style>
+
+<div class="admission-wrapper pt-4">
+    <div class="container" style="max-width: 950px;">
+        <div class="saas-card">
+            
+            <div class="saas-header">
+                <h3 class="mb-0">Edit Student Profile</h3>
+                <div class="urdu-title">طالب علم کی تفصیلات میں ترمیم کریں</div>
+            </div>
+            
+            <div class="card-body p-4 p-md-5">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="row g-4 mb-4 bg-white p-4 rounded-3 shadow-sm border border-info border-opacity-25" style="margin-top: -10px;">
+                        <div class="col-md-6">
+                            <label class="smart-label"><span class="text-info fw-bold">Admission / Reg No.</span> <span class="urdu-lbl text-info">داخلہ نمبر</span></label>
+                            {{ form.admission_no }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="smart-label"><span class="text-info fw-bold">Roll Number</span> <span class="urdu-lbl text-info">رول نمبر</span></label>
+                            {{ form.roll_number }}
+                        </div>
+                    </div>
                     
-                    {% if form.errors %}
-                        <div class="alert alert-danger">Please fix the errors below.</div>
-                    {% endif %}
+                    <div class="section-title mt-0">
+                        <i class="bi bi-pencil-square"></i> Basic Info <span class="urdu-section">بنیادی معلومات</span>
+                    </div>
 
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        <h5 class="text-primary border-bottom pb-2 mb-3">Basic Information</h5>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">First Name *</label>
-                                {{ form.first_name }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Last Name</label>
-                                {{ form.last_name }}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Admission No. *</label>
-                                {{ form.admission_no }}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Roll Number</label>
-                                {{ form.roll_number }}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Admission Date *</label>
-                                {{ form.admission_date }}
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>First Name</span> <span class="urdu-lbl">پہلا نام</span></label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Last Name</span> <span class="urdu-lbl">آخری نام</span></label>
+                            {{ form.last_name }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Date of Birth</span> <span class="urdu-lbl">تاریخ پیدائش</span></label>
+                            {{ form.dob }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Gender</span> <span class="urdu-lbl">جنس</span></label>
+                            {{ form.gender }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Aadhar No.</span> <span class="urdu-lbl">آدھار نمبر</span></label>
+                            {{ form.aadhar_no }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Samagra ID</span> <span class="urdu-lbl">سمگرا آئی ڈی</span></label>
+                            {{ form.samagra_id }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Blood Group</span> <span class="urdu-lbl">بلڈ گروپ</span></label>
+                            {{ form.blood_group }}
+                        </div>
+                    </div>
+
+                    <div class="section-title">
+                        <i class="bi bi-people-fill"></i> Family Relations <span class="urdu-section">خاندانی تفصیلات</span>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Father's Name</span> <span class="urdu-lbl">والد کا نام</span></label>
+                            {{ form.father_name }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Mother's Name</span> <span class="urdu-lbl">والدہ کا نام</span></label>
+                            {{ form.mother_name }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Mobile Number</span> <span class="urdu-lbl">موبائل نمبر</span></label>
+                            {{ form.father_mobile }}
+                        </div>
+                        <div class="col-md-12">
+                            <label class="smart-label"><span>Home Address</span> <span class="urdu-lbl">گھر کا پتہ</span></label>
+                            {{ form.address }}
+                        </div>
+                    </div>
+
+                    <div class="section-title">
+                        <i class="bi bi-shield-check"></i> Workspace Settings <span class="urdu-section">تعلیمی ترتیب</span>
+                    </div>
+
+                    <div class="row g-4 align-items-center">
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Class / Grade</span> <span class="urdu-lbl">درجہ / جماعت</span></label>
+                            {{ form.current_class }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Section</span> <span class="urdu-lbl">سیکشن</span></label>
+                            {{ form.section }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="smart-label"><span>Update Photo</span> <span class="urdu-lbl">تصویر بدلیں</span></label>
+                            {{ form.photo }}
+                        </div>
+                        {% if student.photo %}
+                        <div class="col-12 mt-3 bg-light p-3 rounded-3 d-flex align-items-center gap-3">
+                            <img src="{{ student.photo.url }}" class="current-photo-badge">
+                            <div>
+                                <small class="text-muted d-block">Current Uploaded Photo</small>
+                                <span class="fw-bold text-dark">{{ student.first_name }}'s Photo</span>
                             </div>
                         </div>
+                        {% endif %}
+                    </div>
 
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Gender *</label>
-                                {{ form.gender }}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Date of Birth</label>
-                                {{ form.dob }}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Aadhar No</label>
-                                {{ form.aadhar_no }}
-                            </div>
-                        </div>
+                    <hr class="my-5" style="border-color: #e2e8f0;">
+                    
+                    <div class="d-flex justify-content-end gap-3">
+                        <a href="{% url 'student_list' %}" class="btn btn-light px-4 py-3 rounded-3 border fw-bold">Cancel</a>
+                        <button type="submit" class="btn-submit">
+                            Update Record <i class="bi bi-save ms-1"></i>
+                        </button>
+                    </div>
 
-                        <h5 class="text-primary border-bottom pb-2 mb-3 mt-3">Academic Details</h5>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Class *</label>
-                                {{ form.current_class }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Section</label>
-                                {{ form.section }}
-                            </div>
-                        </div>
-
-                        <h5 class="text-primary border-bottom pb-2 mb-3 mt-3">Other Details</h5>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Blood Group</label>
-                                {{ form.blood_group }}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Religion</label>
-                                {{ form.religion }}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Category</label>
-                                {{ form.category }}
-                            </div>
-                        </div>
-
-                        <h5 class="text-primary border-bottom pb-2 mb-3 mt-3">Family Information</h5>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Father's Name *</label>
-                                {{ form.father_name }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Father's Occupation</label>
-                                {{ form.father_occupation }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Mother's Name</label>
-                                {{ form.mother_name }}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Mobile No. *</label>
-                                {{ form.father_mobile }}
-                            </div>
-                        </div>
-
-                        <div class="row mt-3">
-                            <div class="col-md-8 mb-3">
-                                <label class="form-label">Address *</label>
-                                {{ form.address }}
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Current Photo</label>
-                                {% if student.photo %}
-                                    <img src="{{ student.photo.url }}" height="50" class="d-block mb-2 rounded">
-                                {% endif %}
-                                {{ form.photo }}
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <a href="{% url 'student_list' %}" class="btn btn-secondary me-md-2">Cancel</a>
-                            <button type="submit" class="btn btn-warning px-5">💾 Update Student</button>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
         </div>
     </div>

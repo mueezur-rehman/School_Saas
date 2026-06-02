@@ -1,5 +1,5 @@
 from django.db import models
-from core.models import School, TimeStampedModel
+from core.models import School, TimeStampedModel, AcademicSession # 👈 Import Update Kiya
 from academics.models import ClassGrade, Section
 
 class Student(TimeStampedModel):
@@ -15,7 +15,6 @@ class Student(TimeStampedModel):
         ('alumini', 'Alumini / Left'),
     )
 
-    # 👇 NEW CHOICES (DROPDOWNS)
     BLOOD_GROUP_CHOICES = (
         ('A+', 'A+'), ('A-', 'A-'),
         ('B+', 'B+'), ('B-', 'B-'),
@@ -41,6 +40,10 @@ class Student(TimeStampedModel):
     )
 
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='students')
+    
+    # 👇 NEW FIELD: SESSION LINK
+    session = models.ForeignKey(AcademicSession, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
+
     admission_no = models.CharField(max_length=50)
     admission_date = models.DateField()
     first_name = models.CharField(max_length=100)
@@ -48,14 +51,13 @@ class Student(TimeStampedModel):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     dob = models.DateField(null=True, blank=True)
     
-    # 👇 UPDATED FIELDS WITH CHOICES
     blood_group = models.CharField(max_length=5, choices=BLOOD_GROUP_CHOICES, blank=True, null=True)
     religion = models.CharField(max_length=50, choices=RELIGION_CHOICES, blank=True, null=True)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, blank=True, null=True)
     
     aadhar_no = models.CharField(max_length=20, blank=True, null=True)
+    samagra_id = models.CharField(max_length=9, blank=False)
     
-    # Parents Info
     father_name = models.CharField(max_length=100)
     father_occupation = models.CharField(max_length=100, blank=True, null=True)
     mother_name = models.CharField(max_length=100, blank=True)
@@ -71,9 +73,9 @@ class Student(TimeStampedModel):
     photo = models.ImageField(upload_to='student_photos/', blank=True, null=True)
     
     class Meta:
+        # Session ke saath unique hona chahiye (Same admission number agle saal use ho sakta hai)
         unique_together = [
             ('school', 'admission_no'), 
-            # ('section', 'roll_number'), # Isse abhi comment rakho taaki agar roll no na ho to error na aaye
         ]
     ordering = ['school', 'current_class', 'section', 'first_name']
 

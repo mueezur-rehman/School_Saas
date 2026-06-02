@@ -3,210 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School SaaS Manager</title>
+    <title>{% if user.is_authenticated %}{{ user.school.name }}{% else %}School SaaS{% endif %}</title>
     
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
     
     <style>
-        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary-color: #4f46e5; --sidebar-bg: #1e293b; --bg-color: #f8fafc; }
+        body { background-color: var(--bg-color); font-family: 'Inter', sans-serif; font-size: 0.92rem; }
         
-        /* --- 🔒 FIXED SIDEBAR STYLING --- */
-        .sidebar {
-            position: fixed; /* Fix jagah par jam jaye */
-            top: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 100; /* Content ke upar rahe */
-            padding-top: 20px;
-            overflow-y: auto; /* Agar menu lamba ho to scroll ho */
-            background: #212529; 
-            background: linear-gradient(180deg, #212529 0%, #343a40 100%);
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            transition: all 0.3s;
+        /* Sidebar Styling - (Added flex column for bottom branding) */
+        .sidebar { position: fixed; top: 0; bottom: 0; left: 0; width: 260px; background: var(--sidebar-bg); color: #94a3b8; z-index: 1000; transition: 0.3s; overflow-y: auto; display: flex; flex-direction: column; }
+        .sidebar-brand { color: #fff; font-weight: 800; font-size: 1.3rem; padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        
+        .nav-link { color: #cbd5e1; padding: 0.75rem 1.5rem; font-weight: 500; display: flex; align-items: center; border-left: 3px solid transparent; transition: 0.2s; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-link.active { background: rgba(79, 70, 229, 0.1); color: #fff; border-left-color: var(--primary-color); }
+        .nav-link i { width: 24px; margin-right: 10px; font-size: 1.1rem; }
+        
+        .nav-header { font-size: 0.75rem; text-transform: uppercase; color: #64748b; margin: 1.5rem 1.5rem 0.5rem; font-weight: 700; letter-spacing: 0.5px; }
+        
+        .main-content { margin-left: 260px; padding: 2rem; min-height: 100vh; }
+        
+        /* Utility */
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .btn { border-radius: 8px; font-weight: 500; padding: 0.5rem 1.2rem; }
+        
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 1rem; }
         }
-
-        /* Sidebar Width Control (Desktop par) */
-        @media (min-width: 768px) {
-            .sidebar { width: 25%; } /* Tablet par chouda */
-            .main-content-shifted { margin-left: 25%; width: 75%; } /* Content ko right dhakelo */
-        }
-        @media (min-width: 992px) {
-            .sidebar { width: 16.666667%; } /* Laptop par patla (Standard) */
-            .main-content-shifted { margin-left: 16.666667%; width: 83.333333%; }
-        }
-
-        /* Links Design */
-        .sidebar .nav-link {
-            color: rgba(255,255,255,0.75);
-            padding: 10px 15px;
-            margin: 4px 15px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            display: flex; align-items: center;
-        }
-        .sidebar .nav-link:hover {
-            color: #fff; background-color: rgba(255,255,255,0.1);
-            transform: translateX(5px); transition: 0.2s;
-        }
-        .sidebar .nav-link.active {
-            background-color: #0d6efd; color: white;
-            box-shadow: 0 4px 6px rgba(13, 110, 253, 0.3);
-        }
-        .sidebar .nav-link i { margin-right: 10px; font-size: 1.1rem; }
-
-        /* Headers */
-        .nav-header {
-            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px;
-            color: #adb5bd; margin: 25px 25px 5px; font-weight: 700;
-            border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;
-        }
-
-        /* NProgress Bar Color */
-        #nprogress .bar { background: #0d6efd !important; height: 3px !important; }
     </style>
+
+    {% if request.user.is_authenticated and request.user.school.institute_type != 'madrasa' %}
+    <style>
+        /* Agar school/coaching hai toh Urdu classes ko permanently hide kar do */
+        .urdu, .urdu-label, .urdu-lbl, .urdu-section, .urdu-title, .urdu-sub {
+            display: none !important;
+        }
+    </style>
+    {% endif %}
 </head>
 <body>
 
-<div class="container-fluid">
-    <div class="row">
-        
-        {% if user.is_authenticated %}
-        <nav class="sidebar d-md-block collapse" id="sidebarMenu">
-            
-            <div class="text-center mb-4 pb-3 border-bottom border-secondary">
-                <h4 class="text-white fw-bold mb-0">
-                    <i class="bi bi-building-fill-check text-primary"></i> School SaaS
-                </h4>
-                <small class="text-muted" style="font-size: 11px;">Management System</small>
-            </div>
-            
-            <ul class="nav flex-column mb-5">
-                <li class="nav-item">
-                    <a href="javascript:history.back()" class="nav-link bg-secondary text-white mb-2 justify-content-center fw-bold">
-                        <i class="bi bi-arrow-left"></i> Back
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'dashboard' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">
-                        <i class="bi bi-speedometer2"></i> Dashboard
-                    </a>
-                </li>
-
-                <div class="nav-header">STUDENTS</div>
-                <li class="nav-item">
-                    <a href="{% url 'student_admission' %}" class="nav-link {% if 'admission' in request.path %}active{% endif %}">
-                        <i class="bi bi-person-plus-fill"></i> Admission
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'student_list' %}" class="nav-link {% if 'students' in request.path and 'bulk' not in request.path %}active{% endif %}">
-                        <i class="bi bi-people-fill"></i> Student List
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'bulk_upload_students' %}" class="nav-link {% if 'bulk' in request.path %}active{% endif %}">
-                        <i class="bi bi-file-earmark-spreadsheet-fill"></i> Bulk Upload
-                    </a>
-                </li>
-
-                <div class="nav-header">ACADEMICS</div>
-                <li class="nav-item">
-                    <a href="{% url 'take_attendance' %}" class="nav-link {% if 'attendance' in request.path %}active{% endif %}">
-                        <i class="bi bi-calendar-check-fill"></i> Attendance
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'enter_marks' %}" class="nav-link {% if 'marks' in request.path %}active{% endif %}">
-                        <i class="bi bi-pencil-square"></i> Exam Marks
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'result_list' %}" class="nav-link {% if 'results' in request.path %}active{% endif %}">
-                        <i class="bi bi-trophy-fill"></i> Results
-                    </a>
-                </li>
-
-                <div class="nav-header">FINANCE</div>
-                <li class="nav-item">
-                    <a href="{% url 'collect_fees' %}" class="nav-link {% if 'fees' in request.path %}active{% endif %}">
-                        <i class="bi bi-cash-stack"></i> Collect Fees
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'expense_list' %}" class="nav-link {% if 'expenses' in request.path %}active{% endif %}">
-                        <i class="bi bi-wallet2"></i> Expenses
-                    </a>
-                </li>
-
-                <div class="nav-header">SYSTEM</div>
-                <li class="nav-item px-3 mb-5">
-                    <form action="{% url 'logout' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center btn-sm">
-                            <i class="bi bi-box-arrow-right me-2"></i> Logout
-                        </button>
-                    </form>
-                    <div class="text-center text-muted mt-2 small">
-                        User: {{ request.user.username }}
-                    </div>
-                </li>
-            </ul>
-        </nav>
-        {% endif %}
-
-        <main class="{% if user.is_authenticated %}main-content-shifted{% else %}col-12{% endif %} px-md-4 py-4">
-            
-            {% if user.is_authenticated %}
-            <nav class="navbar navbar-light bg-white shadow-sm d-md-none mb-4 rounded border">
-                <div class="container-fluid">
-                    <span class="navbar-brand mb-0 h1 fw-bold text-primary"><i class="bi bi-building"></i> Menu</span>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                </div>
-            </nav>
-            {% endif %}
-
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
-                        {% if message.tags == 'success' %} <i class="bi bi-check-circle-fill me-2"></i>
-                        {% elif message.tags == 'error' %} <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        {% endif %}
-                        {{ message|safe }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            {% block content %}
-            {% endblock %}
-
-        </main>
+    <div class="d-lg-none d-flex justify-content-between align-items-center bg-white p-3 shadow-sm sticky-top">
+        <button class="btn btn-light" onclick="toggleSidebar()"><i class="bi bi-list fs-4"></i></button>
+        <span class="fw-bold">{{ user.school.name|default:"School SaaS" }}</span>
+        <div></div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+    {% if user.is_authenticated %}
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="bi bi-mortarboard-fill text-primary me-2"></i> {{ L_PRINCIPAL|default:"Manager" }} Panel
+        </div>
+        
+        <ul class="nav flex-column mt-3 mb-4">
+            <li class="nav-item">
+                <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="bi bi-grid-fill"></i> Dashboard
+                </a>
+            </li>
 
-<script>
-    // Link Click Loader
-    document.addEventListener('click', function(e) {
-        var target = e.target.closest('a');
-        if (target && target.getAttribute('href') && 
-            !target.getAttribute('href').startsWith('#') && 
-            !target.getAttribute('href').startsWith('javascript') && 
-            !target.getAttribute('target') &&
-            target.hostname === window.location.hostname) {
-            NProgress.start();
-        }
-    });
-    document.addEventListener('submit', function(e) { if(!e.target.target) NProgress.start(); });
-    window.addEventListener('load', function() { NProgress.done(); });
-    window.addEventListener('pageshow', function() { NProgress.done(); });
-</script>
+            <div class="nav-header">ACADEMICS & STUDENTS</div>
+            <li class="nav-item">
+                <a href="{% url 'student_list' %}" class="nav-link {% if 'students' in request.path and 'promote' not in request.path %}active{% endif %}">
+                    <i class="bi bi-people"></i> {{ L_STUDENT }}s List
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'take_attendance' %}" class="nav-link {% if 'attendance' in request.path %}active{% endif %}">
+                    <i class="bi bi-calendar-check"></i> Attendance
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'promote_students' %}" class="nav-link {% if 'promote' in request.path %}active{% endif %}">
+                    <i class="bi bi-arrow-up-circle"></i> Promote {{ L_STUDENT }}s
+                </a>
+            </li>
 
+            {% if user.role in 'school_admin,super_admin,accountant' %}
+            <div class="nav-header">FINANCE & FEES</div>
+            <li class="nav-item">
+                <a href="{% url 'collect_fees' %}" class="nav-link {% if 'fees/collect' in request.path %}active{% endif %}">
+                    <i class="bi bi-cash-coin"></i> Collect {{ L_FEES }}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'defaulter_list' %}" class="nav-link {% if 'defaulters' in request.path %}active{% endif %}">
+                    <i class="bi bi-exclamation-circle"></i> Due Report
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'expense_list' %}" class="nav-link {% if 'expenses' in request.path %}active{% endif %}">
+                    <i class="bi bi-receipt"></i> Expenses
+                </a>
+            </li>
+            {% endif %}
+
+            <div class="nav-header">EXAMS & RESULTS</div>
+            <li class="nav-item">
+                <a href="{% url 'enter_marks' %}" class="nav-link {% if 'marks' in request.path %}active{% endif %}">
+                    <i class="bi bi-pencil-square"></i> Enter Marks
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'result_list' %}" class="nav-link {% if 'results' in request.path %}active{% endif %}">
+                    <i class="bi bi-trophy"></i> Result Cards
+                </a>
+            </li>
+
+            {% if user.role in 'school_admin,super_admin' %}
+            <div class="nav-header">SETTINGS</div>
+            <li class="nav-item">
+                <a href="{% url 'master_setup' %}" class="nav-link {% if 'setup' in request.path %}active{% endif %}">
+                    <i class="bi bi-sliders"></i> Configuration
+                </a>
+            </li>
+            {% endif %}
+
+            <div class="nav-header">ACCOUNT</div>
+            <li class="nav-item">
+                <a href="{% url 'change_password' %}" class="nav-link {% if 'password' in request.path %}active{% endif %}">
+                    <i class="bi bi-key"></i> Change Password
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <form action="{% url 'logout' %}" method="post" class="px-3 mt-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger w-100 btn-sm" style="border-radius: 8px;">
+                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+
+        <div class="mt-auto p-3 mx-3 mb-4 rounded-4" style="background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(15,23,42,0.3)); border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <img src="https://media.licdn.com/dms/image/v2/D4D0BAQGvXzHzv3TOLQ/company-logo_200_200/B4DZqbacNMH0AI-/0/1763543991584/leadsbytech_logo?e=2147483647&v=beta&t=upvkZ5JOhzXWt0N465ZzYiXNpDZYp8GWtESr12E27hU" style="width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);" alt="LeadsByTech Logo">
+                <div style="line-height: 1;">
+                    <small class="text-white fw-bold d-block" style="font-size: 11px; letter-spacing: 0.5px;">LeadsByTech</small>
+                    <small class="text-primary" style="font-size: 8px; font-weight: 700;">ERP SYSTEM V2.0</small>
+                </div>
+            </div>
+            <p class="mb-0 text-white-50" style="font-size: 9.5px; line-height: 1.4;">
+                Engineered with <i class="bi bi-suit-heart-fill text-danger mx-1"></i> by<br>
+                <strong class="text-white">Mueezur Rehman</strong><br>
+                <a href="https://leadsbytech.netlify.app" target="_blank" class="text-decoration-none text-primary" style="font-size: 8.5px;">Get Support &rarr;</a>
+            </p>
+        </div>
+    </nav>
+    {% endif %}
+
+    <div class="{% if user.is_authenticated %}main-content{% endif %}">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>function toggleSidebar(){document.getElementById('sidebar').classList.toggle('show');}</script>
 </body>
 </html>

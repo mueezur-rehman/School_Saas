@@ -1,0 +1,112 @@
+<!-- templates/accounts/signup.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden" style="max-width: 900px; width: 100%;">
+        <div class="row g-0">
+            <!-- Left Side Banner -->
+            <div class="col-lg-5 bg-primary text-white d-flex align-items-center justify-content-center p-5">
+                <div class="text-center">
+                    <i class="bi bi-buildings-fill display-1 mb-3"></i>
+                    <h2 class="fw-bold">Start Managing</h2>
+                    <p class="opacity-75">Join the easiest platform for Schools, Madrasas & Coaching Centers.</p>
+                    <div class="mt-4">
+                        <small class="d-block mb-2">✨ Automatic Fees Receipt</small>
+                        <small class="d-block mb-2">✨ WhatsApp Results</small>
+                        <small class="d-block">✨ 100% Secure Data</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side Form -->
+            <div class="col-lg-7 p-5 bg-white">
+                <h3 class="fw-bold text-dark mb-4">Create Account</h3>
+                
+                <!-- DYNAMIC ERROR DISPLAY (Jab form fail ho, yeh batayega kahan galti hai) -->
+                {% if form.errors %}
+                    <div class="alert alert-danger py-2 small mb-3">
+                        <strong>Please fix these errors:</strong>
+                        <ul class="mb-0 ps-3">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Institute Details -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold text-muted">Institute Name</label>
+                            {{ form.school_name }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">Type</label>
+                            {{ form.institute_type }}
+                        </div>
+                    </div>
+
+                    <!-- Personal Details -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">First Name</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Last Name</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+
+                    <!-- Contact Details -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Username</label>
+                            {{ form.username }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Mobile Number</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+
+                    <!-- Security Row -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold text-muted">Email Address (For OTP)</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Create Password</label>
+                            {{ form.password1 }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Confirm Password</label>
+                            {{ form.password2 }}
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold rounded-pill">
+                            Get OTP & Setup <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <small class="text-muted">Already registered? <a href="{% url 'login' %}" class="fw-bold text-decoration-none">Login here</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

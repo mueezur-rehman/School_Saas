@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-gear-fill text-primary"></i> School Settings</h5>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="text-center mb-4">
+                            {% if school.logo %}
+                                <img src="{{ school.logo.url }}" class="rounded shadow-sm border p-1" height="100">
+                                <p class="small text-muted mt-2">Current Logo</p>
+                            {% else %}
+                                <div class="bg-light border rounded d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                    <span class="text-muted">No Logo</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">School Name</label>
+                                <input type="text" name="name" class="form-control" value="{{ school.name }}" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Phone Number</label>
+                                <input type="text" name="phone" class="form-control" value="{{ school.phone }}">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Email Address</label>
+                                <input type="email" name="email" class="form-control" value="{{ school.email }}">
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Address (For Receipt)</label>
+                                <textarea name="address" class="form-control" rows="3">{{ school.address }}</textarea>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Update Logo</label>
+                                <input type="file" name="logo" class="form-control" accept="image/*">
+                                <small class="text-muted">Upload PNG or JPG (Max 2MB)</small>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary fw-bold">
+                                💾 Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

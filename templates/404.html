@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found | 404</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0f172a;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            overflow: hidden;
+        }
+        .error-code {
+            font-size: 8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #3b82f6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+        .error-msg { font-size: 1.5rem; font-weight: 600; margin-bottom: 30px; color: #cbd5e1; }
+        .btn-home {
+            background: #2563eb;
+            color: white;
+            padding: 12px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            display: inline-block;
+        }
+        .btn-home:hover { background: #1d4ed8; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(37,99,235,0.4); }
+        .branding { position: absolute; bottom: 20px; font-size: 0.8rem; color: #64748b; }
+    </style>
+</head>
+<body>
+
+    <div>
+        <div class="error-code">404</div>
+        <div class="error-msg">Oops! We lost this page in the cloud.</div>
+        <p style="color: #94a3b8; margin-bottom: 40px;">The page you are looking for doesn't exist or has been moved.</p>
+        
+        <a href="{% url 'dashboard' %}" class="btn-home">
+            <i class="bi bi-house-door-fill me-2"></i> Return to Dashboard
+        </a>
+    </div>
+
+    <div class="branding">
+        Powered by <strong>LeadsByTech Systems</strong>
+    </div>
+
+</body>
+</html>

@@ -1,101 +1,225 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary">📝 Enter Marks</h2>
+<div class="container-fluid px-4 py-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="bi bi-pencil-square text-primary me-2"></i>Marks Entry
+            </h3>
+            <p class="text-muted small mb-0">Manage student marks via Manual Entry or Excel Upload.</p>
+        </div>
+        <div>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill fw-normal">
+                Academic Session: 2025-26
+            </span>
+        </div>
     </div>
 
-    <div class="card shadow-sm bg-light mb-4">
-        <div class="card-body">
-            <form method="get" class="row g-3">
-                <div class="col-md-3">
-                    <label>Select Exam</label>
-                    <select name="exam" class="form-select" required>
-                        <option value="">-- Choose Exam --</option>
-                        {% for ex in exams %}
-                            <option value="{{ ex.id }}" {% if ex.id == sel_exam %}selected{% endif %}>
-                                {{ ex.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
+    <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px; background: #fff;">
+        <div class="card-body p-4">
+            <form method="get" id="mainFilter" class="row g-4 align-items-end">
+                
+                <div class="col-md-5">
+                    <label class="fw-bold text-uppercase text-secondary x-small mb-2" style="font-size: 11px; letter-spacing: 1px;">Step 1: Select Exam</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-trophy"></i></span>
+                        <select name="exam" class="form-select form-select-lg bg-light border-start-0 ps-0" onchange="document.getElementById('subject_input').value=''; this.form.submit()" style="font-size: 14px;">
+                            <option value="">-- Choose Exam Term --</option>
+                            {% for ex in exams %}
+                                <option value="{{ ex.id }}" {% if ex.id == sel_exam %}selected{% endif %}>{{ ex.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <label>Class</label>
-                    <select name="class_grade" class="form-select" required>
-                        <option value="">-- Choose Class --</option>
-                        {% for cls in classes %}
-                            <option value="{{ cls.id }}" {% if cls.id == sel_class %}selected{% endif %}>
-                                {{ cls.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
+
+                <div class="col-md-5">
+                    <label class="fw-bold text-uppercase text-secondary x-small mb-2" style="font-size: 11px; letter-spacing: 1px;">Step 2: Select Class</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-people"></i></span>
+                        <select name="class_grade" class="form-select form-select-lg bg-light border-start-0 ps-0" onchange="document.getElementById('subject_input').value=''; this.form.submit()" style="font-size: 14px;">
+                            <option value="">-- Choose Class --</option>
+                            {% for cls in classes %}
+                                <option value="{{ cls.id }}" {% if cls.id == sel_class %}selected{% endif %}>{{ cls.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <label>Subject</label>
-                    <select name="subject" class="form-select" required>
-                        <option value="">-- Choose Subject --</option>
-                        {% for sub in subjects %}
-                            <option value="{{ sub.id }}" {% if sub.id == sel_subject %}selected{% endif %}>
-                                {{ sub.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Load Students</button>
-                </div>
+
+                <input type="hidden" name="subject" id="subject_input" value="{{ sel_subject }}">
             </form>
         </div>
     </div>
 
-    {% if students_data %}
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="exam_id" value="{{ sel_exam }}">
-        <input type="hidden" name="subject_id" value="{{ sel_subject }}">
+    {% if sel_exam and sel_class %}
 
-        <div class="card shadow">
-            <div class="card-header bg-dark text-white">
-                <h5 class="mb-0">📋 Student List for Grading</h5>
+        {% if subjects %}
+        <div class="mb-4">
+            <label class="fw-bold text-uppercase text-secondary x-small mb-3 d-block" style="font-size: 11px; letter-spacing: 1px;">
+                Step 3: Select Subject for Class {{ subjects.0.class_grade.name }}
+            </label>
+            <div class="d-flex flex-wrap gap-3">
+                {% for sub in subjects %}
+                    <a href="?exam={{ sel_exam }}&class_grade={{ sel_class }}&subject={{ sub.id }}" 
+                       class="subject-tab {% if sub.id == sel_subject %}active shadow-sm{% endif %}">
+                        <span class="fw-bold">{{ sub.name }}</span>
+                        {% if sub.id == sel_subject %}
+                            <span class="badge bg-white text-primary ms-2 rounded-pill" style="font-size: 10px;">Max: {{ sub.total_marks }}</span>
+                        {% endif %}
+                    </a>
+                {% endfor %}
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered mb-0 align-middle">
-                        <thead class="table-light">
+        </div>
+        {% else %}
+            <div class="alert alert-warning border-0 shadow-sm rounded-3">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> No subjects found for this class. Please add subjects in Academics.
+            </div>
+        {% endif %}
+
+        <div class="accordion mb-5 shadow-sm" id="accordionUpload" style="border-radius: 10px; overflow: hidden;">
+            <div class="accordion-item border-0">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed fw-bold text-success" type="button" data-bs-toggle="collapse" data-bs-target="#uploadCollapse" style="background: #f0fff4;">
+                        <i class="bi bi-file-earmark-spreadsheet-fill me-2"></i> Use Bulk Excel Upload (Recommended for Speed)
+                    </button>
+                </h2>
+                <div id="uploadCollapse" class="accordion-collapse collapse" data-bs-parent="#accordionUpload">
+                    <div class="accordion-body bg-white p-4">
+                        <div class="row align-items-center g-3">
+                            <div class="col-md-5">
+                                <h6 class="fw-bold text-dark mb-1">1. Get Template</h6>
+                                <p class="text-muted small mb-2">Download class roster with all subjects.</p>
+                                <a href="{% url 'download_marks_template' %}?class_grade={{ sel_class }}" class="btn btn-outline-secondary w-100 py-2 btn-sm">
+                                    <i class="bi bi-download me-1"></i> Download Sheet
+                                </a>
+                            </div>
+                            <div class="col-md-1 text-center d-none d-md-block text-muted">
+                                <i class="bi bi-chevron-right"></i>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold text-dark mb-1">2. Upload File</h6>
+                                <p class="text-muted small mb-2">Upload the filled Excel sheet here.</p>
+                                <form action="{% url 'bulk_upload_marks' %}" method="post" enctype="multipart/form-data" class="input-group">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="exam_id" value="{{ sel_exam }}">
+                                    <input type="hidden" name="class_grade" value="{{ sel_class }}">
+                                    <input type="file" name="excel_file" class="form-control form-control-sm" required>
+                                    <button type="submit" class="btn btn-success btn-sm fw-bold">Upload</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if current_subject %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="exam_id" value="{{ sel_exam }}">
+            <input type="hidden" name="subject_id" value="{{ sel_subject }}">
+            <input type="hidden" name="save_marks" value="true">
+
+            <div class="card shadow-lg border-0" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center sticky-top" style="z-index: 5;">
+                    <div>
+                        <h5 class="mb-0 fw-bold text-primary">{{ current_subject.name }} Marks</h5>
+                        <span class="text-muted small">Enter marks out of {{ current_subject.total_marks }}</span>
+                    </div>
+                    <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+                        <i class="bi bi-people-fill me-1"></i> Students: {{ students_data|length }}
+                    </div>
+                </div>
+
+                <div class="table-responsive" style="max-height: 60vh; overflow-y: auto;">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light sticky-top" style="top: 0; z-index: 4;">
                             <tr>
-                                <th width="10%">Roll No</th>
-                                <th width="40%">Student Name</th>
-                                <th width="20%">Father Name</th>
-                                <th width="30%">Marks Obtained (Out of 100)</th>
+                                <th class="ps-4 text-secondary text-uppercase x-small" width="10%">Roll No</th>
+                                <th class="text-secondary text-uppercase x-small" width="20%">Adm No</th>
+                                <th class="text-secondary text-uppercase x-small">Student Name</th>
+                                <th class="text-center text-secondary text-uppercase x-small" width="25%">Marks Obtained</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in students_data %}
                             <tr>
-                                <td class="text-center">{{ item.student.roll_number|default:"-" }}</td>
+                                <td class="ps-4 fw-bold text-muted">#{{ item.student.roll_number|default:"-" }}</td>
+                                <td class="text-muted small">{{ item.student.admission_no }}</td>
                                 <td>
-                                    <strong>{{ item.student.first_name }} {{ item.student.last_name }}</strong>
+                                    <div class="fw-bold text-dark">{{ item.student.first_name }} {{ item.student.last_name }}</div>
                                 </td>
-                                <td>{{ item.student.father_name }}</td>
                                 <td>
-                                    <input type="number" step="0.01" name="marks_{{ item.student.id }}" 
-                                           class="form-control text-center fw-bold text-primary" 
-                                           value="{{ item.marks }}" placeholder="0.00" min="0" max="100">
+                                    <input type="number" step="0.01" 
+                                           name="marks_{{ item.student.id }}" 
+                                           class="form-control text-center fw-bold fs-6 mx-auto mark-input" 
+                                           style="max-width: 100px; border-radius: 8px; border: 1px solid #dee2e6;"
+                                           value="{{ item.marks }}" 
+                                           min="0" max="{{ current_subject.total_marks }}"
+                                           placeholder="-"
+                                           onfocus="this.style.borderColor='#0d6efd'; this.style.boxShadow='0 0 0 3px rgba(13,110,253,0.1)';"
+                                           onblur="this.style.borderColor='#dee2e6'; this.style.boxShadow='none';">
                                 </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
+
+                <div class="card-footer bg-white py-3 text-center border-top shadow-lg position-sticky bottom-0" style="z-index: 10;">
+                    <button type="submit" class="btn btn-primary px-5 py-2 rounded-pill fw-bold shadow-sm hover-scale">
+                        <i class="bi bi-check-circle-fill me-2"></i> Save Marks
+                    </button>
+                </div>
             </div>
-            <div class="card-footer text-end">
-                <button type="submit" class="btn btn-success btn-lg px-5">💾 Save Results</button>
+        </form>
+
+        {% elif not sel_subject and subjects %}
+            <div class="text-center py-5">
+                <div class="d-inline-block p-4 rounded-circle bg-light mb-3 text-muted">
+                    <i class="bi bi-hand-index-thumb fs-1"></i>
+                </div>
+                <h5 class="text-muted">Please select a Subject from above tabs to start entering marks.</h5>
             </div>
-        </div>
-    </form>
-    {% elif sel_exam %}
-        <div class="alert alert-info text-center">No students found for the selected criteria.</div>
+        {% endif %}
+
     {% endif %}
 </div>
+
+<style>
+    /* Tab Styling */
+    .subject-tab {
+        text-decoration: none;
+        padding: 10px 20px;
+        background-color: #f8f9fa;
+        color: #555;
+        border-radius: 50px;
+        border: 1px solid #e9ecef;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        font-size: 14px;
+    }
+    .subject-tab:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
+    }
+    .subject-tab.active {
+        background-color: #0d6efd; /* Bootstrap Primary */
+        color: #fff;
+        border-color: #0d6efd;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3) !important;
+    }
+
+    /* Input Focus Animation */
+    .mark-input { transition: all 0.2s; }
+    
+    /* Button Animation */
+    .hover-scale { transition: transform 0.2s; }
+    .hover-scale:hover { transform: scale(1.05); }
+
+    /* Text Utility */
+    .x-small { font-size: 0.75rem; letter-spacing: 0.5px; }
+</style>
 {% endblock %}

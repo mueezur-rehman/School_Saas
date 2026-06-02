@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    
+    {% if not has_session %}
+    <div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden" style="max-width: 650px; width: 100%;">
+            <div class="card-header bg-primary text-white text-center py-4">
+                <i class="bi bi-magic display-4 mb-2 d-block text-warning"></i>
+                <h3 class="fw-bold mb-0">Quick School Setup Wizard</h3>
+                <p class="small opacity-75 mb-0">Let's initialize your system workspace in 1-Click.</p>
+            </div>
+            
+            <div class="card-body p-5 bg-white">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark"><i class="bi bi-calendar3 text-primary me-2"></i> 1. Current Academic Session</label>
+                        <input type="text" name="session_name" class="form-control form-control-lg border-2" placeholder="e.g., 2026-2027" value="2026-2027" required>
+                        <small class="text-muted">Yeh naya saal hoga jisme saare admissions aur fees record hongi.</small>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label fw-bold text-dark"><i class="bi bi-grid-1x2-fill text-primary me-2"></i> 2. Select Institute Structure</label>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
+                                <input type="radio" class="btn-check" name="structure_type" id="struct_school" value="standard" checked autocomplete="off">
+                                <label class="btn btn-outline-primary w-100 p-3 text-start rounded-3 h-100" for="struct_school">
+                                    <span class="d-block fw-bold fs-5 mb-1"><i class="bi bi-book"></i> Standard School</span>
+                                    <span class="small opacity-75 d-block text-muted" style="font-size: 11px;">Auto-creates: Nursery, KG, Class 1 to 5, with Section A.</span>
+                                </label>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <input type="radio" class="btn-check" name="structure_type" id="struct_madrasa" value="madrasa" autocomplete="off">
+                                <label class="btn btn-outline-primary w-100 p-3 text-start rounded-3 h-100" for="struct_madrasa">
+                                    <span class="d-block fw-bold fs-5 mb-1"><i class="bi bi-moon-stars"></i> Madrasa / Islamic</span>
+                                    <span class="small opacity-75 d-block text-muted" style="font-size: 11px;">Auto-creates: Qaida, Nazra, Hifz, Deeniyat, with Section A.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" name="initial_setup" class="btn btn-success btn-lg fw-bold py-3 rounded-pill shadow-sm">
+                            <i class="bi bi-rocket-takeoff-fill me-2"></i> Setup My Institute Now
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-dark"><i class="bi bi-sliders text-primary me-2"></i> Institute Configuration</h3>
+        <span class="badge bg-light text-dark border">Master Control Panel</span>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="list-group shadow-sm border-0" id="list-tab" role="tablist">
+                <a class="list-group-item list-group-item-action fw-bold py-3 {% if active_tab == 'profile' %}active{% endif %}" data-bs-toggle="list" href="#list-profile">
+                    <i class="bi bi-building me-2"></i> Institute Profile
+                </a>
+                <a class="list-group-item list-group-item-action fw-bold py-3 {% if active_tab == 'academics' %}active{% endif %}" data-bs-toggle="list" href="#list-academics">
+                    <i class="bi bi-mortarboard me-2"></i> Academics (Classes)
+                </a>
+                <a class="list-group-item list-group-item-action fw-bold py-3 {% if active_tab == 'staff' %}active{% endif %}" data-bs-toggle="list" href="#list-staff">
+                    <i class="bi bi-people me-2"></i> Staff Management
+                </a>
+                <a class="list-group-item list-group-item-action fw-bold py-3 {% if active_tab == 'fees' %}active{% endif %}" data-bs-toggle="list" href="#list-fees">
+                    <i class="bi bi-cash-coin me-2"></i> Fee Structures
+                </a>
+                <a class="list-group-item list-group-item-action fw-bold py-3 {% if active_tab == 'exams' %}active{% endif %}" data-bs-toggle="list" href="#list-exams">
+                    <i class="bi bi-pencil-square me-2"></i> Exam Setup
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="tab-content" id="nav-tabContent">
+                
+                <div class="tab-pane fade {% if active_tab == 'profile' %}show active{% endif %}" id="list-profile">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-white fw-bold">Update Institute Details</div>
+                        <div class="card-body">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label>Institute Name</label>
+                                        <input type="text" name="name" class="form-control" value="{{ school.name }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Phone</label>
+                                        <input type="text" name="phone" class="form-control" value="{{ school.phone }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Logo</label>
+                                        <input type="file" name="logo" class="form-control">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label>Address</label>
+                                        <textarea name="address" class="form-control" rows="2">{{ school.address }}</textarea>
+                                    </div>
+                                    <div class="col-12 text-end">
+                                        <button type="submit" name="update_profile" class="btn btn-primary fw-bold">Save Profile</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade {% if active_tab == 'academics' %}show active{% endif %}" id="list-academics">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="fw-bold">Add Class/Batch</h6>
+                                    <form method="post">{% csrf_token %}{{ class_form.as_p }}<button type="submit" name="add_class" class="btn btn-sm btn-primary w-100">Add</button></form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="fw-bold">Add Section</h6>
+                                    <form method="post">{% csrf_token %}{{ section_form.as_p }}<button type="submit" name="add_section" class="btn btn-sm btn-success w-100">Add</button></form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="fw-bold">Add Subject</h6>
+                                    <form method="post">{% csrf_token %}{{ subject_form.as_p }}<button type="submit" name="add_subject" class="btn btn-sm btn-warning w-100">Add</button></form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-3 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">Existing Classes</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for cls in classes %}
+                                    <span class="badge bg-light text-dark border p-2">{{ cls.name }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade {% if active_tab == 'staff' %}show active{% endif %}" id="list-staff">
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold">Create New Staff Login</h6>
+                            <form method="post" class="row g-3 align-items-end">
+                                {% csrf_token %}
+                                <div class="col-md-3">{{ staff_form.username.label_tag }} {{ staff_form.username }}</div>
+                                <div class="col-md-3">{{ staff_form.password.label_tag }} {{ staff_form.password }}</div>
+                                <div class="col-md-3">{{ staff_form.role.label_tag }} {{ staff_form.role }}</div>
+                                <div class="col-md-3"><button type="submit" name="add_staff" class="btn btn-dark w-100">Create User</button></div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="table-responsive bg-white rounded shadow-sm">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light"><tr><th>Username</th><th>Role</th><th>Status</th></tr></thead>
+                            <tbody>
+                                {% for st in staff_list %}
+                                <tr>
+                                    <td>{{ st.username }}</td>
+                                    <td><span class="badge bg-secondary">{{ st.get_role_display }}</span></td>
+                                    <td class="text-success">Active</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade {% if active_tab == 'fees' %}show active{% endif %}" id="list-fees">
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold">Set Fee Structure</h6>
+                            <form method="post" class="row g-3 align-items-end">
+                                {% csrf_token %}
+                                <div class="col-md-3">{{ fee_form.class_grade.label_tag }} {{ fee_form.class_grade }}</div>
+                                <div class="col-md-3">{{ fee_form.fee_head_name.label_tag }} {{ fee_form.fee_head_name }}</div>
+                                <div class="col-md-3">{{ fee_form.amount.label_tag }} {{ fee_form.amount }}</div>
+                                <div class="col-md-3"><button type="submit" name="add_fee" class="btn btn-success w-100">Set Fee</button></div>
+                            </form>
+                        </div>
+                    </div>
+                    <ul class="list-group">
+                        {% for f in fees %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ f.class_grade.name }} - {{ f.fee_head_name }}
+                            <span class="badge bg-success rounded-pill">₹{{ f.amount }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="tab-pane fade {% if active_tab == 'exams' %}show active{% endif %}" id="list-exams">
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold">Create New Exam Term</h6>
+                            <form method="post" class="row g-3 align-items-end">
+                                {% csrf_token %}
+                                <div class="col-md-4">{{ exam_form.name.label_tag }} {{ exam_form.name }}</div>
+                                <div class="col-md-3">{{ exam_form.start_date.label_tag }} {{ exam_form.start_date }}</div>
+                                <div class="col-md-3">{{ exam_form.end_date.label_tag }} {{ exam_form.end_date }}</div>
+                                <div class="col-md-2"><button type="submit" name="add_exam" class="btn btn-warning w-100 text-dark fw-bold">Create</button></div>
+                            </form>
+                        </div>
+                    </div>
+                    <ul class="list-group">
+                        {% for ex in exams %}
+                        <li class="list-group-item">{{ ex.name }} <small class="text-muted">({{ ex.start_date }} to {{ ex.end_date }})</small></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

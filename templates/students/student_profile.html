@@ -2,93 +2,219 @@
 
 {% block content %}
 <style>
-    @media print {
-        body * { visibility: hidden; }
-        .printable-area, .printable-area * { visibility: visible; }
-        .printable-area { position: absolute; left: 0; top: 0; width: 100%; }
-        .no-print { display: none !important; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
+    
+    .profile-wrapper {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #f1f5f9;
+        padding-bottom: 50px;
     }
-    /* Button spacing for better look */
-    .action-btn { margin-right: 5px; margin-bottom: 5px; }
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 20px;
+        object-fit: cover;
+        border: 4px solid #ffffff;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    .info-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .info-label .urdu-sub {
+        font-family: 'Noto Nastaliq Urdu', serif;
+        text-transform: none;
+        color: #94a3b8;
+        font-weight: 400;
+    }
+    .info-value {
+        font-size: 14px;
+        color: #0f172a;
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+    .action-btn {
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 13.5px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        width: 100%;
+        text-align: left;
+        text-decoration: none !important;
+    }
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    .master-card {
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        background: #ffffff;
+    }
 </style>
 
-<div class="container printable-area">
-    <div class="card shadow-lg border-0">
+<div class="profile-wrapper py-4">
+    <div class="container-fluid" style="max-width: 1200px;">
         
-        <div class="card-header bg-primary text-white">
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <h4 class="mb-0">📄 Student Profile</h4>
-                
-                <div class="no-print mt-2 mt-md-0">
-                    <a href="{% url 'student_edit' student.pk %}" class="btn btn-warning btn-sm fw-bold action-btn text-dark">
-                        ✏️ Edit
-                    </a>
-
-                    <a href="{% url 'student_fee_ledger' student.pk %}" class="btn btn-success btn-sm fw-bold action-btn">
-                        💰 Fees
-                    </a>
-
-                    <a href="{% url 'generate_id_card' student.pk %}" target="_blank" class="btn btn-info btn-sm fw-bold action-btn text-white">
-                        🪪 ID Card
-                    </a>
-
-                    <a href="{% url 'print_admission_form' student.pk %}" target="_blank" class="btn btn-secondary btn-sm fw-bold action-btn">
-                        📝 Form
-                    </a>
-
-                    <button onclick="window.print()" class="btn btn-light btn-sm fw-bold action-btn text-primary">
-                        🖨️ Print Profile
-                    </button>
-
-                    <a href="{% url 'student_list' %}" class="btn btn-outline-light btn-sm action-btn">Back</a>
-                </div>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-4">
+            <div>
+                <h4 class="fw-bold text-dark mb-0">
+                    <i class="bi bi-shield-person text-primary me-2"></i> Student Master Dossier
+                </h4>
+                <small class="text-muted">Manage core registration specification and documents</small>
+            </div>
+            <div>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-bold">
+                    System Status: {{ student.status|upper }}
+                </span>
             </div>
         </div>
 
-        <div class="card-body p-5">
-            <div class="row mb-4 border-bottom pb-4">
-                <div class="col-md-2 text-center">
-                    {% if student.photo %}
-                        <img src="{{ student.photo.url }}" class="img-thumbnail rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
-                    {% else %}
-                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 120px; height: 120px; font-size: 40px;">
-                            {{ student.first_name|first }}
+        <div class="row g-4">
+            
+            <div class="col-lg-4 col-md-5">
+                <div class="card master-card text-center p-4">
+                    <div class="position-relative d-inline-block mx-auto mb-3">
+                        {% if student.photo %}
+                            <img src="{{ student.photo.url }}" class="profile-avatar">
+                        {% else %}
+                            <img src="https://ui-avatars.com/api/?name={{ student.first_name }}+{{ student.last_name }}&background=eff6ff&color=2563eb&size=120&bold=true" class="profile-avatar">
+                        {% endif %}
+                    </div>
+                    
+                    <h4 class="fw-bold text-dark mb-1">{{ student.first_name }} {{ student.last_name }}</h4>
+                    <p class="text-muted small mb-0">Enrolled Allocation: <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold">{{ student.current_class.name }}</span></p>
+                    
+                    <hr class="my-4 opacity-25">
+                    
+                    <div class="row g-2 text-start bg-light p-3 rounded-3 mb-4">
+                        <div class="col-6">
+                            <small class="text-muted d-block" style="font-size: 10px; font-weight: 700;">ADMISSION NO</small>
+                            <span class="fw-bold text-dark fs-6">{{ student.admission_no }}</span>
                         </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-10">
-                    <h2 class="fw-bold text-uppercase">{{ student.first_name }} {{ student.last_name }}</h2>
-                    <p class="text-muted mb-1">Admission No: <strong>{{ student.admission_no }}</strong></p>
-                    <p class="text-muted mb-1">Class: <strong>{{ student.current_class.name }} - {{ student.section.name }}</strong></p>
-                    <p class="text-muted">Status: <span class="badge bg-success">{{ student.status|upper }}</span></p>
+                        <div class="col-6 border-start ps-3">
+                            <small class="text-muted d-block" style="font-size: 10px; font-weight: 700;">ROLL NUMBER</small>
+                            <span class="fw-bold text-dark fs-6">{{ student.roll_number|default:"-" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column gap-2 text-start">
+                        <a href="{% url 'generate_id_card' student.id %}" class="btn action-btn bg-dark text-white shadow-sm">
+                            <i class="bi bi-person-badge text-info fs-5"></i>
+                            <div>
+                                <span class="d-block">Generate Smart ID Card</span>
+                                <small class="text-muted d-block" style="font-size: 10px; color: #94a3b8 !important;">Download print-ready high-res JPG</small>
+                            </div>
+                        </a>
+
+                        <a href="{% url 'print_admission_form' student.id %}" target="_blank" class="btn action-btn bg-primary text-white shadow-sm">
+                            <i class="bi bi-printer text-warning fs-5"></i>
+                            <div>
+                                <span class="d-block">Print Admission Form</span>
+                                <small class="text-white-50 d-block" style="font-size: 10px;">A4 print with dual language support</small>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'student_fee_ledger' student.id %}" class="btn action-btn bg-success text-white shadow-sm">
+                            <i class="bi bi-wallet2 text-white fs-5"></i>
+                            <div>
+                                <span class="d-block">Fee Ledger & Statement</span>
+                                <small class="text-white-50 d-block" style="font-size: 10px;">Track transaction logs and balances</small>
+                            </div>
+                        </a>
+
+                        <a href="{% url 'student_edit' student.id %}" class="btn action-btn bg-light text-dark border mt-2">
+                            <i class="bi bi-pencil-square text-secondary fs-5"></i>
+                            <span class="fw-bold">Modify Profile Records</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="text-primary border-bottom pb-2">👤 Personal Details</h5>
-                    <table class="table table-borderless">
-                        <tr><td width="40%" class="text-muted">Date of Birth:</td><td class="fw-bold">{{ student.dob }}</td></tr>
-                        <tr><td class="text-muted">Gender:</td><td class="fw-bold">{{ student.get_gender_display }}</td></tr>
-                        <tr><td class="text-muted">Blood Group:</td><td class="fw-bold">{{ student.blood_group|default:"-" }}</td></tr>
-                        <tr><td class="text-muted">Category:</td><td class="fw-bold">{{ student.category|default:"-" }}</td></tr>
-                        <tr><td class="text-muted">Aadhar No:</td><td class="fw-bold">{{ student.aadhar_no|default:"-" }}</td></tr>
-                    </table>
+            <div class="col-lg-8 col-md-7">
+                
+                <div class="card master-card p-4 mb-4">
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">
+                        <i class="bi bi-file-earmark-text text-primary me-2"></i> Personal Record Specifications
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="info-label"><span>Date of Birth</span> <span class="urdu-sub">تاریخ پیدائش</span></div>
+                            <div class="info-value">{{ student.dob|date:"d F Y"|default:"-" }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label"><span>Gender Identity</span> <span class="urdu-sub">جنس</span></div>
+                            <div class="info-value">{{ student.get_gender_display }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label"><span>National Identification (Aadhar)</span> <span class="urdu-sub">آدھار نمبر</span></div>
+                            <div class="info-value">{{ student.aadhar_no|default:"-" }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label"><span>State Samagra SSSM ID</span> <span class="urdu-sub">سمگرا آئی ڈی</span></div>
+                            <div class="info-value">{{ student.samagra_id|default:"-" }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label"><span>Blood Group Matrix</span> <span class="urdu-sub">بلڈ گروپ</span></div>
+                            <div class="info-value">
+                                {% if student.blood_group %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1 fw-bold">{{ student.blood_group }}</span>
+                                {% else %}
+                                    <span class="text-muted fw-normal">Not Registered</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label"><span>Academic Year Session</span> <span class="urdu-sub">تعلیمی سال</span></div>
+                            <div class="info-value text-primary fw-bold">{{ student.session.name }}</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <h5 class="text-primary border-bottom pb-2">👨‍👩‍👦 Parents Info</h5>
-                    <table class="table table-borderless">
-                        <tr><td width="40%" class="text-muted">Father's Name:</td><td class="fw-bold">{{ student.father_name }}</td></tr>
-                        <tr><td class="text-muted">Mother's Name:</td><td class="fw-bold">{{ student.mother_name|default:"-" }}</td></tr>
-                        <tr><td class="text-muted">Occupation:</td><td class="fw-bold">{{ student.father_occupation|default:"-" }}</td></tr>
-                        <tr><td class="text-muted">Mobile:</td><td class="fw-bold">{{ student.father_mobile }}</td></tr>
-                        <tr><td class="text-muted">Address:</td><td>{{ student.address }}</td></tr>
-                    </table>
+
+                <div class="card master-card p-4">
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">
+                        <i class="bi bi-house-gear text-primary me-2"></i> Guardianship & Logistic Link
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="info-label"><span>Father / Legal Guardian</span> <span class="urdu-sub">والد کا نام</span></div>
+                            <div class="info-value text-uppercase">{{ student.father_name }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label"><span>Mother's Name Identity</span> <span class="urdu-sub">والدہ کا نام</span></div>
+                            <div class="info-value text-uppercase">{{ student.mother_name|default:"-" }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label"><span>Primary Emergency Contact</span> <span class="urdu-sub">موبائل نمبر</span></div>
+                            <div class="info-value text-success">
+                                <i class="bi bi-whatsapp me-1"></i> {{ student.father_mobile }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label"><span>Enrolled Section Track</span> <span class="urdu-sub">سیکشن</span></div>
+                            <div class="info-value"><span class="badge bg-light text-dark border px-2 py-1">Section {{ student.section.name }}</span></div>
+                        </div>
+                        <div class="col-12">
+                            <div class="info-label"><span>Verified Residential Address</span> <span class="urdu-sub">گھر کا پتہ</span></div>
+                            <div class="info-value text-muted fw-normal" style="line-height: 1.5; font-size: 13.5px;">{{ student.address }}</div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
-        </div>
-        <div class="card-footer text-center text-muted small">
-            Generated on {% now "d M Y" %} by {{ request.user.username }}
         </div>
     </div>
 </div>

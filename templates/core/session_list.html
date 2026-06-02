@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold"><i class="bi bi-calendar3 text-primary me-2"></i> Academic Sessions</h3>
+        <a href="{% url 'add_session' %}" class="btn btn-primary fw-bold">
+            <i class="bi bi-plus-circle"></i> Create New Session
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Session Name</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-dark">{{ session.name }}</td>
+                        <td class="text-muted">{{ session.start_date|date:"d M Y" }} to {{ session.end_date|date:"d M Y" }}</td>
+                        <td>
+                            {% if session.is_current %}
+                                <span class="badge bg-success px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> Active Current</span>
+                            {% else %}
+                                <span class="badge bg-secondary px-3 py-2 rounded-pill">Past / Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            {% if not session.is_current %}
+                                <a href="{% url 'set_active_session' session.id %}" class="btn btn-sm btn-outline-success fw-bold" onclick="return confirm('Do you want to switch to this session? All new admissions and fees will go to this session.')">
+                                    Set as Active
+                                </a>
+                            {% else %}
+                                <button class="btn btn-sm btn-light text-muted" disabled>Currently Active</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center py-4 text-muted">No sessions created yet. Create one to start using the system.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

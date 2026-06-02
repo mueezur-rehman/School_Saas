@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold"><i class="bi bi-arrow-up-circle-fill text-success"></i> Promote Students</h3>
+        <span class="badge bg-secondary">End of Session Activity</span>
+    </div>
+    
+    <div class="card shadow-sm p-4 border-0 mb-4">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="fw-bold text-muted small">From Class (Current)</label>
+                <select name="from_class" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- Select Class --</option>
+                    {% for c in classes %}
+                        <option value="{{ c.id }}" {% if selected_class == c.id %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+
+    {% if selected_class %}
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="from_class" value="{{ selected_class }}">
+        
+        <div class="card shadow border-0">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center p-3">
+                <h6 class="mb-0 fw-bold text-primary">Students List</h6>
+                <div class="d-flex gap-2">
+                    <select name="to_class" class="form-select form-select-sm" required style="width: 200px;">
+                        <option value="">-- Promote To Class --</option>
+                        {% for c in classes %}
+                            <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-success btn-sm fw-bold">Promote Selected</button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%" class="ps-3"><input type="checkbox" class="form-check-input" onclick="toggleAll(this)"></th>
+                            <th>Student Name</th>
+                            <th>Roll No</th>
+                            <th>Admission No</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for std in students %}
+                        <tr>
+                            <td class="ps-3"><input type="checkbox" name="student_ids" value="{{ std.id }}" class="form-check-input"></td>
+                            <td class="fw-bold">{{ std.first_name }} {{ std.last_name }}</td>
+                            <td>{{ std.roll_number }}</td>
+                            <td>{{ std.admission_no }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center py-4 text-muted">No students found in this class.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+</div>
+
+<script>
+    function toggleAll(source) {
+        checkboxes = document.getElementsByName('student_ids');
+        for(var i=0, n=checkboxes.length;i<n;i++) {
+            checkboxes[i].checked = source.checked;
+        }
+    }
+</script>
+{% endblock %}

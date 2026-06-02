@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #f8fafc;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    /* 🚀 HERO SECTION */
+    .hero-section {
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+        padding: 100px 0 80px 0;
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+    }
+
+    .hero-title { font-size: 3.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 20px; text-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    .hero-subtitle { font-size: 1.25rem; font-weight: 400; color: #cbd5e1; max-width: 700px; margin: 0 auto 40px auto; line-height: 1.6; }
+    
+    .btn-hero { padding: 15px 40px; font-size: 1.1rem; font-weight: 700; border-radius: 50px; transition: 0.3s; text-decoration: none; }
+    .btn-primary-hero { background: #2563eb; color: white; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4); border: none; }
+    .btn-primary-hero:hover { background: #1d4ed8; transform: translateY(-3px); color: white; }
+    .btn-outline-hero { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
+    .btn-outline-hero:hover { background: rgba(255,255,255,0.2); transform: translateY(-3px); color: white; }
+
+    /* 📊 FEATURES SECTION */
+    .features-section { padding: 80px 0; background: white; }
+    .feature-card { background: #f8fafc; border-radius: 20px; padding: 30px; text-align: center; transition: 0.3s; border: 1px solid #e2e8f0; height: 100%; }
+    .feature-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); background: white; border-color: #bfdbfe; }
+    .feature-icon { width: 70px; height: 70px; font-size: 30px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; transition: 0.3s; }
+    .feature-card:hover .feature-icon { transform: scale(1.1); }
+    
+    /* 💰 PSYCHOLOGY PRICING SECTION */
+    .pricing-section { padding: 80px 0; background-color: #f8fafc; border-top: 1px solid #e2e8f0; }
+    .pricing-card { background: white; border-radius: 24px; padding: 40px 30px; border: 1px solid #e2e8f0; transition: 0.3s; position: relative; height: 100%; display: flex; flex-direction: column; }
+    .pricing-card.popular { border: 2.5px solid #2563eb; box-shadow: 0 20px 40px rgba(37,99,235,0.08); transform: scale(1.03); }
+    .popular-badge { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: #2563eb; color: white; padding: 4px 15px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .price-amount { font-size: 2.8rem; font-weight: 800; color: #0f172a; }
+    .price-duration { color: #64748b; font-size: 0.95rem; font-weight: 500; }
+    .price-anchor { font-size: 0.85rem; color: #16a34a; background: #f0fdf4; padding: 3px 10px; border-radius: 6px; font-weight: 700; display: inline-block; margin-top: 5px; }
+    
+    .pricing-features { list-style: none; padding: 0; margin: 30px 0; text-align: left; flex-grow: 1; }
+    .pricing-features li { margin-bottom: 12px; font-size: 0.9rem; color: #334155; display: flex; align-items: center; gap: 10px; }
+    .pricing-features li i { color: #2563eb; font-size: 1.1rem; }
+    .pricing-card.popular .pricing-features li i { color: #10b981; }
+
+    /* 🏢 LEADSBYTECH & FOUNDER SECTION */
+    .founder-section { padding: 80px 0; background: #0f172a; color: white; position: relative; }
+    .company-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 40px; backdrop-filter: blur(20px); height: 100%; }
+    .company-logo { width: 80px; height: 80px; border-radius: 16px; object-fit: contain; background: white; padding: 5px; margin-bottom: 20px; }
+    
+    .founder-profile { text-align: center; }
+    .founder-img { width: 150px; height: 150px; border-radius: 50%; border: 4px solid #2563eb; object-fit: cover; margin-bottom: 20px; box-shadow: 0 15px 35px rgba(37,99,235,0.3); }
+    .highlight-tag { background: rgba(37, 99, 235, 0.2); color: #60a5fa; padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(37, 99, 235, 0.5); }
+
+    /* FOOTER */
+    .saas-footer { background: #020617; padding: 30px 0; text-align: center; color: #64748b; font-size: 0.9rem; }
+    .saas-footer a { color: #60a5fa; text-decoration: none; }
+    .saas-footer a:hover { color: #93c5fd; }
+</style>
+
+<div class="hero-section">
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="highlight-tag text-white border-white mb-3 bg-transparent">v2.0 Beta Live Now</div>
+        <h1 class="hero-title">The Operating System for <br> <span style="color: #60a5fa;">Smart Schools & Madrasas</span></h1>
+        <p class="hero-subtitle">Digitize admissions, automate fee ledgers, and generate premium ID cards in seconds. Built for local institutions to scale with enterprise-grade technology.</p>
+        
+        <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn-hero btn-primary-hero">Go to Dashboard <i class="bi bi-arrow-right ms-2"></i></a>
+            {% else %}
+                <a href="{% url 'signup' %}" class="btn-hero btn-primary-hero">Start Free Trial</a>
+                <a href="{% url 'login' %}" class="btn-hero btn-outline-hero"><i class="bi bi-lock-fill me-2"></i> Login to Workspace</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-bold mb-3">All-in-One Dashboard</span>
+            <h2 class="fw-bold text-dark" style="font-size: 2.5rem; letter-spacing: -0.5px;">Everything you need. <br>Nothing you don't.</h2>
+            <p class="text-muted mt-2" style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">Replace multiple registers and software tools with our unified educational ecosystem.</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: #eff6ff; color: #2563eb;"><i class="bi bi-person-vcard"></i></div>
+                    <h4 class="fw-bold mb-3">Premium ID Cards</h4>
+                    <p class="text-muted small">Generate and download ultra-HD standard PVC-ready ID cards with dynamic backgrounds and QR codes in one click.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: #f0fdf4; color: #16a34a;"><i class="bi bi-wallet2"></i></div>
+                    <h4 class="fw-bold mb-3">Smart Fee Ledgers</h4>
+                    <p class="text-muted small">Never lose track of a single rupee. Complete ledger management, automatic defaulter lists, and instant professional receipts.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: #fef2f2; color: #dc2626;"><i class="bi bi-translate"></i></div>
+                    <h4 class="fw-bold mb-3">Dual-Language Ready</h4>
+                    <p class="text-muted small">The only system that supports native English and Urdu (Nastaliq) data handling for specialized Madrasa and Islamic schools.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: #f5f3ff; color: #7c3aed;"><i class="bi bi-file-earmark-pdf"></i></div>
+                    <h4 class="fw-bold mb-3">1-Click Admission Forms</h4>
+                    <p class="text-muted small">Auto-generate beautiful, fully-filled A4 PDF admission forms containing complete student and guardian dossiers instantly.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: #fffbeb; color: #d97706;"><i class="bi bi-calendar2-check"></i></div>
+                    <h4 class="fw-bold mb-3">Digital Attendance</h4>
+                    <p class="text-muted small">Fast and intuitive daily attendance tracking for students. Extract monthly reports to monitor absent trends effortlessly.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: #ecfeff; color: #0891b2;"><i class="bi bi-graph-down-arrow"></i></div>
+                    <h4 class="fw-bold mb-3">Expense Tracking</h4>
+                    <p class="text-muted small">Manage school expenditures, salaries, and daily costs. Upload bills and track your net cash flow via detailed analytics.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pricing-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-bold mb-3">Transparent Pricing</span>
+            <h2 class="fw-bold text-dark" style="font-size: 2.5rem; letter-spacing: -0.5px;">Fair Pricing, No Hidden Traps</h2>
+            <p class="text-muted mt-2" style="font-size: 1.1rem;">Choose a slab that fits your student strength. Upgrade or downgrade anytime.</p>
+        </div>
+
+        <div class="row g-4 align-items-center justify-content-center">
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="pricing-card">
+                    <h4 class="fw-bold text-dark mb-2">Starter Plan</h4>
+                    <p class="text-muted small">Perfect for tuitions & new madrasas</p>
+                    <div class="mt-3">
+                        <span class="price-amount">₹999</span>
+                        <span class="price-duration">/ month</span>
+                    </div>
+                    <div>
+                        <span class="price-anchor"><i class="bi bi-lightning"></i> Just ₹33 / Day!</span>
+                    </div>
+                    
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check-circle-fill"></i> Up to 200 Students Matrix</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Core Fee & Receipts Engine</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Dual Language Data Support</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Premium ID Card Downloads</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Basic Attendance Sheet</li>
+                    </ul>
+                    
+                    <a href="{% url 'signup' %}" class="btn btn-outline-primary w-100 py-2 mt-auto" style="border-radius: 10px;">Get Started</a>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <h4 class="fw-bold text-dark mb-2">Growth Plan</h4>
+                    <p class="text-muted small">Best for expanding middle-tier schools</p>
+                    <div class="mt-3">
+                        <span class="price-amount">₹1,499</span>
+                        <span class="price-duration">/ month</span>
+                    </div>
+                    <div>
+                        <span class="price-anchor" style="background: #d1fae5; color: #065f46;"><i class="bi bi-shield-check"></i> Most Cost Effective</span>
+                    </div>
+                    
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check-circle-fill"></i> Up to 500 Students Allocation</li>
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>Everything in Starter Plan</strong></li>
+                        <li><i class="bi bi-check-circle-fill"></i> Complete Automated Defaulter List</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Expense & Cash Flow Dashboard</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Bulk CSV Excel Upload Tool</li>
+                    </ul>
+                    
+                    <a href="{% url 'signup' %}" class="btn btn-primary w-100 py-2 mt-auto" style="border-radius: 10px; background: #2563eb;">Start 14-Day Free Trial</a>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="pricing-card">
+                    <h4 class="fw-bold text-dark mb-2">Pro Enterprise</h4>
+                    <p class="text-muted small">For premium large-scale institutions</p>
+                    <div class="mt-3">
+                        <span class="price-amount">₹1,999</span>
+                        <span class="price-duration">/ month</span>
+                    </div>
+                    <div>
+                        <span class="price-anchor" style="background: #eff6ff; color: #1e40af;"><i class="bi bi-award"></i> Infinite Scalability</span>
+                    </div>
+                    
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check-circle-fill"></i> 500+ Unlimited Students Base</li>
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>Everything in Growth Plan</strong></li>
+                        <li><i class="bi bi-check-circle-fill"></i> Priority Multi-Tenant Server</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Custom Exam Marks Management</li>
+                        <li><i class="bi bi-check-circle-fill"></i> 24/7 Direct Founder Support</li>
+                    </ul>
+                    
+                    <a href="{% url 'signup' %}" class="btn btn-outline-primary w-100 py-2 mt-auto" style="border-radius: 10px;">Contact Sales</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="founder-section">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            
+            <div class="col-lg-7">
+                <div class="company-card">
+                    <div class="d-flex align-items-center mb-4 gap-3">
+                        <img src="https://media.licdn.com/dms/image/v2/D4D0BAQGvXzHzv3TOLQ/company-logo_200_200/B4DZqbacNMH0AI-/0/1763543991584/leadsbytech_logo?e=2147483647&v=beta&t=upvkZ5JOhzXWt0N465ZzYiXNpDZYp8GWtESr12E27hU" alt="LeadsByTech Logo" class="company-logo">
+                        <div>
+                            <h2 class="fw-bold mb-0">LeadsByTech</h2>
+                            <span class="highlight-tag mb-0 mt-2"><i class="bi bi-geo-alt-fill me-1"></i> Based in Burhanpur, India</span>
+                        </div>
+                    </div>
+                    
+                    <p class="fs-5 opacity-75 mb-4" style="line-height: 1.8;">
+                        Founded in October 2025, LeadsByTech is a disruptive startup empowering small businesses and educational institutions with cutting-edge Tech & Data solutions. 
+                    </p>
+                    
+                    <div class="row g-4 mt-2">
+                        <div class="col-sm-6">
+                            <h5 class="fw-bold text-white"><i class="bi bi-code-slash text-primary me-2"></i> Tech Solutions</h5>
+                            <p class="text-white-50 small">Custom Django web apps, tailored CRMs, REST APIs, and automation tools engineered using Python, PostgreSQL, and modern frontend stacks.</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <h5 class="fw-bold text-white"><i class="bi bi-database-check text-success me-2"></i> Data Services</h5>
+                            <p class="text-white-50 small">Advanced web scraping, data mining, cleaning, and CRM enrichment for 99% accurate B2B leads. Quality first, automation focused.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="company-card text-center py-5">
+                    <img src="https://media.licdn.com/dms/image/v2/D4D03AQF5E8S7YT686A/profile-displayphoto-scale_200_200/B4DZuAjJwUHwAc-/0/1767388257871?e=2147483647&v=beta&t=ggTblnZTMUVzy4uiUlEUmc5vCtlRBN6QTfshoiAECPE" alt="Mueezur Rehman" class="founder-img">
+                    <h3 class="fw-bold mb-1">Mueezur Rehman</h3>
+                    <p class="text-primary fw-bold mb-3">Founder & Software Engineer</p>
+                    <p class="text-white-50 small px-3">
+                        "My vision is to bridge the gap between local businesses and high-end tech. This ERP is designed to save institutions hours of administrative work, so they can focus on what truly matters: Education."
+                    </p>
+                    
+                    <div class="mt-4 pt-4 border-top border-secondary">
+                        <a href="mailto:mueezmark2005@gmail.com" class="btn btn-outline-light rounded-pill px-4 me-2"><i class="bi bi-envelope-fill me-2"></i> Contact Me</a>
+                        <a href="https://leadsbytech.netlify.app" target="_blank" class="btn btn-primary rounded-pill px-4"><i class="bi bi-globe me-2"></i> Visit Website</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="saas-footer">
+    <div class="container">
+        <p class="mb-1">&copy; 2026 Crafted with precision by <strong>LeadsByTech</strong>.</p>
+        <p class="mb-0">Transforming ideas into scalable digital realities. <a href="https://leadsbytech.netlify.app" target="_blank">leadsbytech.netlify.app</a></p>
+    </div>
+</div>
+
+{% endblock %}

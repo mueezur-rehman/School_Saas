@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Fee Receipt #{{ payment.id }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
     <style>
-        body { font-family: 'Times New Roman', serif; background: #555; margin: 0; padding: 20px; }
+        body { font-family: 'Times New Roman', serif; background: #525659; margin: 0; padding: 20px; }
         
         /* A4 Page Layout */
         .a4-page {
@@ -13,7 +15,7 @@
             background: #fff;
             margin: 0 auto;
             padding: 10mm;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             box-sizing: border-box;
             position: relative;
         }
@@ -21,59 +23,74 @@
         /* Receipt Box (Two copies on one page) */
         .receipt-copy {
             border: 2px solid #000;
-            padding: 15px;
-            margin-bottom: 20px; /* Space between copies */
-            height: 130mm; /* Half page approx */
+            padding: 20px;
+            margin-bottom: 25px;
+            height: 130mm;
             position: relative;
         }
 
         /* Header */
-        .header { text-align: center; border-bottom: 1px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-        .school-name { font-size: 24px; font-weight: bold; text-transform: uppercase; margin: 5px 0; }
+        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+        .school-name { font-size: 26px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 5px 0; }
         .receipt-title { 
             text-align: center; background: #000; color: #fff; 
-            display: inline-block; padding: 3px 15px; 
-            font-weight: bold; text-transform: uppercase; border-radius: 15px;
-            font-size: 12px; margin-bottom: 10px;
+            display: inline-block; padding: 4px 20px; 
+            font-weight: bold; text-transform: uppercase; border-radius: 50px;
+            font-size: 13px; margin-bottom: 15px; font-family: sans-serif;
         }
 
         /* Info Grid */
-        .info-table { width: 100%; margin-bottom: 10px; font-size: 14px; }
-        .info-table td { padding: 3px; }
-        .label { font-weight: bold; width: 15%; }
+        .info-table { width: 100%; margin-bottom: 15px; font-size: 15px; border-collapse: collapse; }
+        .info-table td { padding: 4px; vertical-align: top; }
+        .label { font-weight: bold; width: 18%; color: #333; }
 
         /* Amount Table */
-        .amount-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        .amount-table th, .amount-table td { border: 1px solid #000; padding: 6px; text-align: left; }
-        .amount-table th { background-color: #f0f0f0; text-align: center; }
-        .amount-table .amount { text-align: right; }
+        .amount-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 15px; }
+        .amount-table th, .amount-table td { border: 1px solid #000; padding: 8px; text-align: left; }
+        .amount-table th { background-color: #f8f9fa; text-align: center; font-weight: bold; text-transform: uppercase; font-size: 13px; }
+        .amount-table .amount { text-align: right; font-family: 'Courier New', monospace; font-weight: bold; }
 
         /* Footer */
-        .footer { margin-top: 30px; display: flex; justify-content: space-between; font-size: 12px; text-align: center; }
-        .sign-line { border-top: 1px solid #000; width: 120px; padding-top: 5px; font-weight: bold; }
+        .footer { margin-top: 40px; display: flex; justify-content: space-between; font-size: 13px; text-align: center; }
+        .sign-line { border-top: 1px solid #000; width: 140px; padding-top: 5px; font-weight: bold; }
 
-        /* Watermark */
+        /* Copy Label */
         .copy-label {
-            position: absolute; top: 10px; right: 10px; 
-            font-size: 10px; border: 1px solid #000; padding: 2px 5px;
-            text-transform: uppercase; letter-spacing: 1px;
+            position: absolute; top: 15px; right: 15px; 
+            font-size: 11px; border: 1px solid #000; padding: 3px 8px;
+            text-transform: uppercase; font-family: sans-serif; background: #fff;
         }
 
-        /* Buttons (Non-Print) */
+        /* --- PROFESSIONAL ACTION BAR (No Print) --- */
         .no-print-bar {
             position: fixed; top: 0; left: 0; width: 100%;
-            background: rgba(0,0,0,0.8); padding: 10px;
-            text-align: center; z-index: 1000;
+            background: rgba(30, 30, 30, 0.95); padding: 15px;
+            text-align: center; z-index: 1000; display: flex; justify-content: center; gap: 15px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-        .btn {
-            padding: 10px 20px; border: none; border-radius: 5px; 
-            color: white; font-weight: bold; cursor: pointer; text-decoration: none;
-            margin: 0 5px; font-family: sans-serif; font-size: 14px;
+        
+        .action-btn {
+            padding: 10px 20px; border: none; border-radius: 6px; 
+            color: white; font-weight: 600; cursor: pointer; text-decoration: none;
+            font-family: 'Segoe UI', sans-serif; font-size: 14px; 
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .btn-print { background: #0d6efd; }
-        .btn-whatsapp { background: #198754; }
-        .btn-home { background: #ffc107; color: #000; }
-        .btn-back { background: #6c757d; }
+        
+        /* Button Colors & Hover States */
+        .btn-print { background-color: #007bff; }
+        .btn-print:hover { background-color: #0056b3; transform: translateY(-1px); }
+        
+        .btn-whatsapp { background-color: #25D366; }
+        .btn-whatsapp:hover { background-color: #128C7E; transform: translateY(-1px); }
+        
+        .btn-new { background-color: #6c757d; }
+        .btn-new:hover { background-color: #545b62; transform: translateY(-1px); }
+        
+        .btn-dashboard { background-color: #343a40; }
+        .btn-dashboard:hover { background-color: #23272b; transform: translateY(-1px); }
 
         @media print {
             body { background: none; padding: 0; }
@@ -85,12 +102,20 @@
 <body>
 
     <div class="no-print-bar">
-        <button onclick="window.print()" class="btn btn-print">🖨️ Print Receipt</button>
+        <button onclick="window.print()" class="action-btn btn-print">
+            <i class="bi bi-printer-fill"></i> Print Receipt
+        </button>
         
-        <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-whatsapp">📲 Send WhatsApp</a>
+        <a href="{{ whatsapp_url }}" target="_blank" class="action-btn btn-whatsapp">
+            <i class="bi bi-whatsapp"></i> Send to Parent
+        </a>
         
-        <a href="{% url 'dashboard' %}" class="btn btn-home">🏠 Home</a>
-        <a href="javascript:history.back()" class="btn btn-back">⬅️ Back</a>
+        <a href="{% url 'collect_fees' %}" class="action-btn btn-new">
+            <i class="bi bi-plus-circle-fill"></i> New Collection
+        </a>
+        <a href="{% url 'dashboard' %}" class="action-btn btn-dashboard">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
     </div>
 
     <div class="a4-page">
@@ -99,46 +124,50 @@
             <span class="copy-label">Student Copy</span>
             <div class="header">
                 {% if payment.school.logo %}
-                    <img src="{{ payment.school.logo.url }}" height="50">
+                    <img src="{{ payment.school.logo.url }}" height="60" style="margin-bottom: 5px;">
                 {% endif %}
                 <div class="school-name">{{ payment.school.name }}</div>
-                <div style="font-size: 12px;">{{ payment.school.address }}</div>
+                <div style="font-size: 13px;">{{ payment.school.address }}</div>
             </div>
-            <div style="text-align: center;"><span class="receipt-title">FEE RECEIPT</span></div>
+            <div style="text-align: center;"><span class="receipt-title">Official Fee Receipt</span></div>
 
             <table class="info-table">
                 <tr>
-                    <td class="label">Receipt No:</td> <td>#{{ payment.id }}</td>
+                    <td class="label">Receipt No:</td> <td><b>#{{ payment.id }}</b></td>
                     <td class="label">Date:</td> <td>{{ payment.payment_date }}</td>
                 </tr>
                 <tr>
-                    <td class="label">Student Name:</td> <td><b>{{ payment.student.first_name }} {{ payment.student.last_name }}</b></td>
+                    <td class="label">Session:</td> <td><b>{{ payment.session.name|default:"-" }}</b></td>
                     <td class="label">Class:</td> <td>{{ payment.student.current_class.name }} ({{ payment.student.section.name }})</td>
                 </tr>
                 <tr>
-                    <td class="label">Father Name:</td> <td>{{ payment.student.father_name }}</td>
-                    <td class="label">Roll No:</td> <td>{{ payment.student.roll_number|default:"-" }}</td>
+                    <td class="label">Student:</td> <td style="text-transform: uppercase;"><b>{{ payment.student.first_name }} {{ payment.student.last_name }}</b></td>
+                    <td class="label">Adm No:</td> <td>{{ payment.student.admission_no }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Father:</td> <td>{{ payment.student.father_name }}</td>
+                    <td class="label">Mobile:</td> <td>{{ payment.student.father_mobile }}</td>
                 </tr>
             </table>
 
             <table class="amount-table">
                 <tr>
-                    <th>Description / Particulars</th>
-                    <th width="30%">Amount (₹)</th>
+                    <th>Particulars / Description</th>
+                    <th width="25%">Amount (₹)</th>
                 </tr>
                 <tr>
-                    <td>Tuition / School Fees <br> <small><i>(Mode: {{ payment.get_mode_display }})</i></small></td>
-                    <td class="amount">{{ payment.amount_paid }}</td>
+                    <td style="padding: 15px 8px;">
+                        <strong>School Fees Payment</strong><br>
+                        <span style="font-size: 12px; color: #555;">Payment Mode: {{ payment.get_mode_display }}</span>
+                        {% if payment.remarks %}
+                            <br><span style="font-size: 12px; color: #555;">Note: {{ payment.remarks }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="amount" style="vertical-align: middle;">{{ payment.amount_paid }}</td>
                 </tr>
-                {% if payment.remarks %}
                 <tr>
-                    <td><small>Remarks: {{ payment.remarks }}</small></td>
-                    <td class="amount">-</td>
-                </tr>
-                {% endif %}
-                <tr>
-                    <td style="text-align: right; font-weight: bold;">TOTAL PAID</td>
-                    <td class="amount" style="font-weight: bold; background: #f9f9f9;">₹{{ payment.amount_paid }}</td>
+                    <td style="text-align: right; font-weight: bold; padding-right: 15px;">TOTAL RECEIVED</td>
+                    <td class="amount" style="background: #eee;">₹{{ payment.amount_paid }}</td>
                 </tr>
             </table>
 
@@ -148,56 +177,65 @@
                     Parent's Signature
                 </div>
                 <div>
-                    <div class="sign-line">Accountant / Cashier</div>
+                    <div class="sign-line">Authorized Signatory</div>
                 </div>
             </div>
         </div>
 
-        <div style="border-top: 2px dashed #999; margin: 20px 0; text-align: center; font-size: 10px; color: #555;">
-            ✂️ Cut Here ✂️
+        <div style="border-top: 2px dashed #bbb; margin: 25px 0; text-align: center; position: relative; height: 20px;">
+            <span style="background: #fff; padding: 0 10px; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #777;">
+                <i class="bi bi-scissors"></i> Cut Here
+            </span>
         </div>
 
         <div class="receipt-copy">
             <span class="copy-label">Office Copy</span>
             <div class="header">
                 {% if payment.school.logo %}
-                    <img src="{{ payment.school.logo.url }}" height="50">
+                    <img src="{{ payment.school.logo.url }}" height="60" style="margin-bottom: 5px;">
                 {% endif %}
                 <div class="school-name">{{ payment.school.name }}</div>
-                <div style="font-size: 12px;">{{ payment.school.address }}</div>
+                <div style="font-size: 13px;">{{ payment.school.address }}</div>
             </div>
-            <div style="text-align: center;"><span class="receipt-title">FEE RECEIPT</span></div>
+            <div style="text-align: center;"><span class="receipt-title">Official Fee Receipt</span></div>
 
             <table class="info-table">
                 <tr>
-                    <td class="label">Receipt No:</td> <td>#{{ payment.id }}</td>
+                    <td class="label">Receipt No:</td> <td><b>#{{ payment.id }}</b></td>
                     <td class="label">Date:</td> <td>{{ payment.payment_date }}</td>
                 </tr>
                 <tr>
-                    <td class="label">Student Name:</td> <td><b>{{ payment.student.first_name }} {{ payment.student.last_name }}</b></td>
-                    <td class="label">Class:</td> <td>{{ payment.student.current_class.name }} ({{ payment.student.section.name }})</td>
+                    <td class="label">Session:</td> <td><b>{{ payment.session.name|default:"-" }}</b></td>
+                    <td class="label">Class:</td> <td>{{ payment.student.current_class.name }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Student:</td> <td><b>{{ payment.student.first_name }} {{ payment.student.last_name }}</b></td>
+                    <td class="label">Adm No:</td> <td>{{ payment.student.admission_no }}</td>
                 </tr>
             </table>
 
             <table class="amount-table">
                 <tr>
                     <th>Description</th>
-                    <th width="30%">Amount (₹)</th>
+                    <th width="25%">Amount (₹)</th>
                 </tr>
                 <tr>
-                    <td>Tuition / School Fees <br> <small><i>(Mode: {{ payment.get_mode_display }})</i></small></td>
-                    <td class="amount">{{ payment.amount_paid }}</td>
+                    <td style="padding: 10px 8px;">
+                        <strong>School Fees Payment</strong><br>
+                        <span style="font-size: 12px; color: #555;">Mode: {{ payment.get_mode_display }}</span>
+                    </td>
+                    <td class="amount" style="vertical-align: middle;">{{ payment.amount_paid }}</td>
                 </tr>
                 <tr>
-                    <td style="text-align: right; font-weight: bold;">TOTAL PAID</td>
-                    <td class="amount" style="font-weight: bold;">₹{{ payment.amount_paid }}</td>
+                    <td style="text-align: right; font-weight: bold; padding-right: 15px;">TOTAL RECEIVED</td>
+                    <td class="amount" style="background: #eee;">₹{{ payment.amount_paid }}</td>
                 </tr>
             </table>
 
             <div class="footer">
-                <div>
+                <div style="text-align: left;">
                     <br>
-                    Checked By
+                    Generated by: {{ request.user.username }}
                 </div>
                 <div>
                     <div class="sign-line">Authorized Signatory</div>
@@ -206,6 +244,5 @@
         </div>
 
     </div>
-
 </body>
 </html>
